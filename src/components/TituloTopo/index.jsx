@@ -1,5 +1,5 @@
-import Titulo from "./Titulo";
-import Subtitulo from "./Subtitulo";
+import Titulo from "./titulo";
+import Subtitulo from "./subtitulo";
 
 export default function TituloTopo({ titulo, subtitulo }) {
   return (

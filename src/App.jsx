@@ -15,7 +15,7 @@ import ModeloShowPage from "./pages/modelo/AlunoShowPage"
 import ModeloEditPage from "./pages/modelo/AlunoEditPage"
 import Ouvidoria from "./pages/ouvidoria/OuvidoriaPage";
 import NoticiaPage from "./pages/noticias/NoticiaPage"
-import DocentePage from "./pages/Docente/Docentepage";
+import DocentePage from "./pages/docente/DocentePage";
 import InscricaoPage from "./pages/inscricoes/InscricoesPage";
 
 
