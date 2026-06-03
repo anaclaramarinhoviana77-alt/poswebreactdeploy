@@ -1,6 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# importa todos os models pra registrar no SQLAlchemy (os relacionamentos precisam de todos)
+import models.user_model
+import models.aluno_model
+import models.docente_model
+import models.disciplina_model
+import models.turma_model
+import models.matricula_model
+
+from routes import aluno_routes, auth_routes
+
 app = FastAPI(title="API Pós-Graduação IFBA")
 
 # CORS — libera o front-end a conversar com a API
@@ -14,6 +24,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# liga as rotas na aplicação
+app.include_router(auth_routes.router)
+app.include_router(aluno_routes.router)
 
 
 @app.get("/")
