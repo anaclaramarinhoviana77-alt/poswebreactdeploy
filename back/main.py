@@ -9,7 +9,7 @@ import models.disciplina_model
 import models.turma_model
 import models.matricula_model
 
-from routes import aluno_routes, auth_routes
+from routes import aluno_routes, auth_routes, me_routes
 
 app = FastAPI(title="API Pós-Graduação IFBA")
 
@@ -28,6 +28,7 @@ app.add_middleware(
 # liga as rotas na aplicação
 app.include_router(auth_routes.router)
 app.include_router(aluno_routes.router)
+app.include_router(me_routes.router)
 
 
 @app.get("/")
