@@ -11,5 +11,7 @@ class Docente(Base):
     email = Column(String(255), unique=True, nullable=False)
     status = Column(String(20), default="Ativo")
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
+    cpf = Column(String(14), unique=True, nullable=False)
+    titulacao = Column(String(100), nullable=True)
 
     turmas = relationship("Turma", back_populates="docente")
