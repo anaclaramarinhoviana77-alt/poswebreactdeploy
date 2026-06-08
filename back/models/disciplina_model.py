@@ -11,5 +11,6 @@ class Disciplina(Base):
     ementa = Column(Text)
     carga_horaria = Column(Integer)
     link = Column(String(255), nullable=True)
+    codigo = Column(String(50), unique=True, nullable=False, index=True)
 
     turmas = relationship("Turma", back_populates="disciplina")

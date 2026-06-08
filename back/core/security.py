@@ -34,9 +34,9 @@ def create_access_token(user_id: int, role: str) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-# parte do FastAPI que extrai o token do header Authorization , ou seja segurança aqui
-
+# Autenticação: lê o token do header Authorization e valida (quem é você?)
 security_scheme = HTTPBearer(auto_error=False)
+
 
 def get_current_user(cred: HTTPAuthorizationCredentials = Depends(security_scheme)):
     erro_401 = HTTPException(
@@ -46,14 +46,24 @@ def get_current_user(cred: HTTPAuthorizationCredentials = Depends(security_schem
     # le o cabecalho Authorization; se nao tiver token -> 401
     if cred is None:
         raise erro_401
-    #  decodifica e valida assinatura + expiracao
+    # decodifica e valida assinatura + expiracao
     try:
         payload = jwt.decode(cred.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except JWTError:
         raise erro_401
-    #  extrai o id e a role de dentro do token
+    # extrai o id e a role de dentro do token
     user_id = payload.get("sub")
     role = payload.get("role")
     if user_id is None:
         raise erro_401
     return {"id": user_id, "role": role}
+
+
+# Autorização: só deixa passar quem tem role admin (você PODE fazer isso?)
+def require_admin(user: dict = Depends(get_current_user)):
+    if user["role"] != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso restrito (apenas admin)",
+        )
+    return user
