@@ -6,12 +6,12 @@ from models.turma_model import Turma
 from models.disciplina_model import Disciplina
 from models.docente_model import Docente
 from schemas.turma_schema import TurmaCreate, TurmaResponse
-from core.security import get_current_user
+from core.security import require_admin
 
 router = APIRouter(prefix="/turmas", tags=["Turmas"])
 
 @router.post("/", response_model=TurmaResponse, status_code=status.HTTP_201_CREATED)
-def criar_turma(dados: TurmaCreate, db: Session = Depends(get_db), logado : dict = Depends(get_current_user)):
+def criar_turma(dados: TurmaCreate, db: Session = Depends(get_db), logado : dict = Depends(require_admin)):
 
     #verificar se o professor existe
     professor_existe = db.query(Docente).filter(Docente.id == dados.docente_id).first()
@@ -23,9 +23,6 @@ def criar_turma(dados: TurmaCreate, db: Session = Depends(get_db), logado : dict
     if not disciplina_existe:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"A disciplina com Dados {dados.disciplina_id}, não foi encontrado")
 
-    #aqui checa se a disciplina ja tem turma
-    if db.query(Turma).filter(Turma.disciplina_id == dados.disciplina_id).first():
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="essa disciplina ja possui turma cadastrada")
     
     nova_turma = Turma(
         disciplina_id=dados.disciplina_id,
