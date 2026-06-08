@@ -15,3 +15,4 @@ class TurmaResponse(BaseModel):
     docente_id: int
     semestre: str
     vagas_total: int
+    vagas_disponiveis: int
