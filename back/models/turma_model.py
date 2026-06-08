@@ -11,7 +11,8 @@ class Turma(Base):
     docente_id = Column(Integer, ForeignKey("docentes.id"), nullable=False)
     semestre = Column(String(10), nullable=False)
     vagas_total = Column(Integer, nullable=False)
-
+    #adição de vagas disopniveis para turma
+    vagas_disponiveis = Column(Integer, nullable=False)
     disciplina = relationship("Disciplina", back_populates="turmas")
     docente = relationship("Docente", back_populates="turmas")
     matriculas = relationship("Matricula", back_populates="turma")
