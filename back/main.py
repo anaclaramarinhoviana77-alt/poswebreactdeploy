@@ -9,7 +9,7 @@ import models.disciplina_model
 import models.turma_model
 import models.matricula_model
 
-from routes import aluno_routes, auth_routes, docente_routes, me_routes, disciplina_routes, turma_routes
+from routes import aluno_routes, auth_routes, docente_routes, me_routes, disciplina_routes, turma_routes, relatorio_routes
 
 app = FastAPI(title="API Pós-Graduação IFBA")
 
@@ -32,7 +32,7 @@ app.include_router(docente_routes.router)
 app.include_router(me_routes.router)
 app.include_router(disciplina_routes.router)
 app.include_router(turma_routes.router)
-
+app.include_router(relatorio_routes.router)
 
 @app.get("/")
 def home():
