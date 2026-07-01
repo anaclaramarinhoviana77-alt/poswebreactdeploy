@@ -40,16 +40,37 @@ def relatorio_turmas(
         .all()
     )
 
-    resultado = []
+    total_vagas = 0
+    total_matriculados = 0
+    total_ociosas = 0
+    detalhes_turma = []
 
     for item in relatorio:
-        resultado.append({
+        total_vagas += item.vagas_total
+        total_matriculados += item.matriculados
+        total_ociosas += item.vagas_disponiveis
+
+        #calcular a porcentagem de ocupação da turma
+        ocupacao_turma =  (item.matriculados / item.vagas_total) * 100 if item.vagas_total > 0 else 0.0
+
+
+        detalhes_turma.append({
             "turma_id": item.turma_id,
             "disciplina": item.disciplina,
             "semestre": item.semestre,
             "vagas_total": item.vagas_total,
             "vagas_disponiveis": item.vagas_disponiveis,
             "matriculados": item.matriculados,
+            "percentual_ocupacao": round(ocupacao_turma, 2)
         })
 
-    return resultado
+        taxa_ocupacao_geral = (total_matriculados / total_vagas) * 100 if total_vagas > 0 else 0.0
+
+    return {
+        "total_turmas": len(relatorio),
+        "vagas_totais_ofertadas": total_vagas,
+        "total_matriculados": total_matriculados,
+        "total_vagas_ociosas": total_ociosas,
+        "taxa_de_ocupacao_geral": taxa_ocupacao_geral,
+        "detalhes_por_turma": detalhes_turma,
+    }
