@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
+
+import csv
+from io import StringIO
+
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -19,6 +24,7 @@ router = APIRouter(
 #relatoria de turmas
 @router.get("/turmas")
 def relatorio_turmas(
+    formato: str = Query(default="json"),
     db: Session = Depends(get_db),
     usuario: dict = Depends(require_admin),
 ):
@@ -49,9 +55,9 @@ def relatorio_turmas(
     detalhes_turma = []
 
     for item in relatorio:
-        total_vagas = item.vagas_total
-        total_matriculados = item.matriculados
-        total_ociosas = item.vagas_disponiveis
+        total_vagas += item.vagas_total
+        total_matriculados += item.matriculados
+        total_ociosas += item.vagas_disponiveis
 
 
         detalhes_turma.append({
@@ -62,6 +68,39 @@ def relatorio_turmas(
             "matriculados": item.matriculados,
             "vagas_disponiveis": item.vagas_disponiveis,
         })
+
+    if formato.lower() == "csv":
+        output = StringIO(newline="")
+        writer = csv.writer(output)
+
+        writer.writerow([
+            "Turma ID",
+            "Disciplina",
+            "Semestre",
+            "Total de Vagas",
+            "Matriculados",
+            "Vagas Disponíveis",
+        ])
+
+        for turma in detalhes_turma:
+            writer.writerow([
+                turma["turma_id"],
+                turma["disciplina"],
+                turma["semestre"],
+                turma["total_de_vagas"],
+                turma["matriculados"],
+                turma["vagas_disponiveis"],
+            ])
+
+        output.seek(0)
+
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": "attachment; filename=relatorio_turmas.csv"
+            },
+        )
 
     return {
         "total_turmas": len(relatorio),
