@@ -159,9 +159,9 @@ def relatorio_matricula(
             Matricula.id,
             Aluno.nome.label("nome_aluno"),
             Aluno.id.label("aluno_id"),
-            Turma.nome.label("nome_turma"),
             Disciplina.nome.label("nome_disciplina"),
-            Turma.codigo,
+            Turma.codigo.label("codigo_turma"),
+            Disciplina.codigo,
             Matricula.data_matricula,
             Matricula.status,
         )
@@ -180,11 +180,12 @@ def relatorio_matricula(
 
         detalhes_matricula_atual = {
             "matricula_id": item.id,
+            "nome_aluno": item.nome_aluno,
             "id_aluno": item.aluno_id,
             "data_de_matricula": item.data_matricula,
-            "disciplina_nome": item.nome_disciplina,
-            "turma_nome": item.nome_turma,
-            "codigo_turma": item.codigo,
+            "disciplina": item.nome_disciplina,
+            "codigo_disciplina": item.codigo,
+            "codigo_turma": item.codigo_turma,
             "status_matricula": item.status
         }
     

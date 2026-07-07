@@ -29,7 +29,8 @@ def criar_turma(dados: TurmaCreate, db: Session = Depends(get_db), logado : dict
         docente_id=dados.docente_id,
         semestre=dados.semestre,
         vagas_total=dados.vagas_total,
-        vagas_disponiveis=dados.vagas_total
+        vagas_disponiveis=dados.vagas_total,
+        codigo=dados.codigo
     )
 
     db.add(nova_turma)
