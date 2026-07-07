@@ -9,6 +9,7 @@ from models.turma_model import Turma
 from models.disciplina_model import Disciplina
 from models.matricula_model import Matricula
 from models.docente_model import Docente
+from models.aluno_model import Aluno
 
 router = APIRouter(
     prefix="/relatorios",
@@ -145,4 +146,51 @@ def relatorio_academico(
         "taxa_de_ocupacao_geral": taxa_ocupacao_geral,
         "detalhes_por_disciplina": list(disciplina_dict.values()),
     }
+
+
+#relatorio de matriculas
+@router.get("/matricula")
+def relatorio_matricula(
+    db : Session = Depends(get_db),
+    Usuario : dict = Depends(require_admin)):
     
+    relatorio = (
+        db.query(
+            Matricula.id,
+            Aluno.nome.label("nome_aluno"),
+            Aluno.id.label("aluno_id"),
+            Turma.nome.label("nome_turma"),
+            Disciplina.nome.label("nome_disciplina"),
+            Turma.codigo,
+            Matricula.data_matricula,
+            Matricula.status,
+        )
+        .join(Aluno, Matricula.aluno_id == Aluno.id) 
+        .join(Turma, Matricula.turma_id == Turma.id)
+        .join(Disciplina, Turma.disciplina_id == Disciplina.id)
+        .all()
+    )
+
+    total_matriculados = 0
+    
+    matricula_list = []
+
+    for item in relatorio:
+        total_matriculados += 1
+
+        detalhes_matricula_atual = {
+            "matricula_id": item.id,
+            "id_aluno": item.aluno_id,
+            "data_de_matricula": item.data_matricula,
+            "disciplina_nome": item.nome_disciplina,
+            "turma_nome": item.nome_turma,
+            "codigo_turma": item.codigo,
+            "status_matricula": item.status
+        }
+    
+        matricula_list.append(detalhes_matricula_atual)
+
+    return{
+        "total_matriculado": total_matriculados,
+        "matriculas": matricula_list
+    }
