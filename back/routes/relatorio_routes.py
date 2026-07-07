@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -16,6 +16,7 @@ router = APIRouter(
 
 @router.get("/turmas")
 def relatorio_turmas(
+    formato: str = Query(default="json"),
     db: Session = Depends(get_db),
     usuario: dict = Depends(require_admin),
 ):
@@ -66,6 +67,11 @@ def relatorio_turmas(
 
         taxa_ocupacao_geral = (total_matriculados / total_vagas) * 100 if total_vagas > 0 else 0.0
 
+    if formato == "csv":
+        return {
+            "mensagem": "Exportação CSV será implementada na próxima subtarefa."
+        }
+    
     return {
         "total_turmas": len(relatorio),
         "vagas_totais_ofertadas": total_vagas,
