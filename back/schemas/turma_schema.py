@@ -4,8 +4,9 @@ from pydantic import BaseModel, ConfigDict, Field
 class TurmaCreate(BaseModel):
     disciplina_id: int = Field(ge=1)
     docente_id: int = Field(ge=1)
-    semestre: str = Field(min_length=1, max_length=10)
+    semestre: str = Field(min_length=1, max_length=15)
     vagas_total: int = Field(ge=1)
+    codigo: str = Field(min_length=1, max_length=10)
 
 #o que a API DEVOLVE (sem a senha!)
 class TurmaResponse(BaseModel):
@@ -16,3 +17,4 @@ class TurmaResponse(BaseModel):
     semestre: str
     vagas_total: int
     vagas_disponiveis: int
+    codigo: str
