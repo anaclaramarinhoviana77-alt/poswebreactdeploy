@@ -1,4 +1,8 @@
+import csv
+from io import StringIO
+
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -65,13 +69,43 @@ def relatorio_turmas(
             "percentual_ocupacao": round(ocupacao_turma, 2)
         })
 
-        taxa_ocupacao_geral = (total_matriculados / total_vagas) * 100 if total_vagas > 0 else 0.0
+    taxa_ocupacao_geral = (total_matriculados / total_vagas) * 100 if total_vagas > 0 else 0.0
 
-    if formato == "csv":
-        return {
-            "mensagem": "Exportação CSV será implementada na próxima subtarefa."
-        }
-    
+    if formato.lower() == "csv":
+        output = StringIO(newline="")
+
+        writer = csv.writer(output)
+
+        writer.writerow([
+            "Turma ID",
+            "Disciplina",
+            "Semestre",
+            "Vagas Totais",
+            "Vagas Disponíveis",
+            "Matriculados",
+            "Percentual de Ocupação"
+        ])
+
+        for turma in detalhes_turma:
+            writer.writerow([
+                turma["turma_id"],
+                turma["disciplina"],
+                turma["semestre"],
+                turma["vagas_total"],
+                turma["vagas_disponiveis"],
+                turma["matriculados"],
+                turma["percentual_ocupacao"],
+            ])
+
+        output.seek(0)
+
+        return StreamingResponse(
+            output,
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": "attachment; filename=relatorio_turmas.csv"
+            }
+        )
     return {
         "total_turmas": len(relatorio),
         "vagas_totais_ofertadas": total_vagas,
